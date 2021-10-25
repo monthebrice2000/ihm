@@ -74,6 +74,28 @@ public class Grapher extends JPanel {
 		repaint();
 	}
 
+	Function getFunctionToRemovedByClicked(){
+		return selected_functions.firstElement();
+	}
+
+	void removeFunctionByClicked(  ){
+		Function deletedFunction = selected_functions.firstElement();
+		selected_functions.clear();
+		int deletedIndex = -1;
+		for( Function f: functions ){
+			deletedIndex++;
+			if ( f.toString().equals( deletedFunction.toString() ) ){
+				break;
+			}
+		}
+		if( deletedIndex != -1){
+			System.out.println( "Suppression de l'element "+ functions.get(deletedIndex));
+			functions.remove( deletedIndex );
+			paintComponent( this.getGraphics());
+		}
+
+	}
+
 	public void setSelectedFunctions( Function function ){
 		selected_functions.clear();
 		selected_functions.add( function );
@@ -130,37 +152,37 @@ public class Grapher extends JPanel {
 		}
 
 		for(Function f: functions) {
-			int Ys[] = new int[N];
-			for(int i = 0; i < N; i++) {
-				Ys[i] = Y(f.y(xs[i]));
-			}
-			for(Function f1: selected_functions) {
-				// y values
-
-				if ( f1.toString() == f.toString() ){
-					g2.setStroke(new BasicStroke(3));
-					g2.drawPolyline(Xs, Ys, N);
-				}else{
-					g2.setStroke(new BasicStroke(1));
-					g2.drawPolyline(Xs, Ys, N);
-				}
-
-
-//			if( f.toString() == "sin(x)"){
-//
-//			}else{
-//				g2.setStroke(new BasicStroke(1));
-//				g2.drawPolyline(Xs, Ys, N);
-//			}
-			}
-			// y values
 //			int Ys[] = new int[N];
 //			for(int i = 0; i < N; i++) {
 //				Ys[i] = Y(f.y(xs[i]));
 //			}
+//			for(Function f1: selected_functions) {
+//				// y values
 //
-//			g2.setStroke(new BasicStroke(3));
-//			g2.drawPolyline(Xs, Ys, N);
+//				if ( f1.toString() == f.toString() ){
+//					g2.setStroke(new BasicStroke(3));
+//					g2.drawPolyline(Xs, Ys, N);
+//				}else{
+//					g2.setStroke(new BasicStroke(1));
+//					g2.drawPolyline(Xs, Ys, N);
+//				}
+//
+//
+////			if( f.toString() == "sin(x)"){
+////
+////			}else{
+////				g2.setStroke(new BasicStroke(1));
+////				g2.drawPolyline(Xs, Ys, N);
+////			}
+//			}
+			// y values
+			int Ys[] = new int[N];
+			for(int i = 0; i < N; i++) {
+				Ys[i] = Y(f.y(xs[i]));
+			}
+
+			//g2.setStroke(new BasicStroke(3));
+			g2.drawPolyline(Xs, Ys, N);
 //			if( f.toString() == "sin(x)"){
 //
 //			}else{

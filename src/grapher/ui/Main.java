@@ -8,12 +8,14 @@ import grapher.fc.FunctionFactory;
 
 import javax.swing.*;
 import javax.swing.JSplitPane;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.border.Border;
+import javax.swing.event.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.Arrays;
 
 
 // main that launch a grapher.ui.Grapher
@@ -25,12 +27,10 @@ public class Main extends JFrame {
 		
 		Grapher grapher = new Grapher();
 		String[] ex = {"sin(x)", "cos(x)", "tan(x)"};
+
 		for(String expression: ex) {
 			grapher.add(expression);
 		}
-
-		//grapher.add(ex[1]);
-
 
 		Interaction i = new Interaction( grapher );
 		grapher.addMouseListener( i );
@@ -39,37 +39,74 @@ public class Main extends JFrame {
 		add(grapher);
 
 		javax.swing.JSplitPane splitPane = new javax.swing.JSplitPane( javax.swing.JSplitPane.HORIZONTAL_SPLIT );
-		javax.swing.JSplitPane splitPane2 = new javax.swing.JSplitPane( JSplitPane.VERTICAL_SPLIT );
-		JList<String> myList = new JList<String>( ex );
+		DefaultListModel<String> model = new DefaultListModel<>();
+		JList<String> myList = new JList<String>( model );
+		model.addAll(Arrays.asList(ex));
 		splitPane.setRightComponent( grapher );
-		JButton button1 = new JButton("Button1");
-		JButton button2 = new JButton("Button2");
-		splitPane.setLeftComponent( splitPane2 );
-		splitPane2.setTopComponent( myList );
-		splitPane2.setBottomComponent( new JList<JButton>(new JButton[]{button1, button2}) );
+
+
+		JButton button1 = new JButton("+");
+		JButton button2 = new JButton("-");
+		JPanel panel = new JPanel();
+		JPanel buttonsPanel = new JPanel();
+		splitPane.setLeftComponent( panel );
+		panel.setLayout( new GridLayout( 2,1));
+		panel.add( myList);
+		panel.add( buttonsPanel );
+		buttonsPanel.setLayout( new GridLayout(1,2));
+		buttonsPanel.add( button1 );
+		buttonsPanel.add( button2 );
+
 		splitPane.setDividerSize( 10 );
 		splitPane.setDividerLocation( 100 );
-		//splitPane2.setDividerSize( 10 );
-		//splitPane2.setDividerLocation( 100 );
 		splitPane.setOneTouchExpandable( true );
 		splitPane.addMouseListener( i );
-		//splitPane.add( splitPane2 );
 		add( splitPane );
 
 		myList.addListSelectionListener(new ListSelectionListener() {
+
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (!e.getValueIsAdjusting()) {
-					System.out.println( myList.getSelectedValue().toString() );
-					String selectedItem = myList.getSelectedValue().toString();
-					Function f = FunctionFactory.createFunction( selectedItem );
-					grapher.setSelectedFunctions( f );
+					if( myList.getSelectionModel().getMinSelectionIndex( ) >= 0 ){
+						System.out.println( "+++++"+model.get( myList.getSelectionModel().getMinSelectionIndex() ) );
+						String selectedItem = myList.getSelectedValue().toString();
+						Function f = FunctionFactory.createFunction( selectedItem );
+						grapher.setSelectedFunctions( f );
+					}
+
 				}
 			}
 		});
 
 		//ToolbarClass toolbar = new ToolbarClass();
 		//toolbar.createAndShowGUI();
+
+		button1.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String action = e.getActionCommand();
+				if( action.equals( "+" ) ){
+					System.out.println( "J'ajoute une fonction");
+				}
+			}
+		});
+
+		button2.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String action = e.getActionCommand();
+				ListSelectionModel selmodel = myList.getSelectionModel();
+				int index = selmodel.getMinSelectionIndex();
+				if (index >= 0)
+					System.out.println( index );
+					System.out.println( model );
+					model.removeElementAt( index );
+					grapher.removeFunctionByClicked();
+					myList.setSelectedIndex( model.getSize() - 1 );
+
+			}
+		});
 
 
 		pack();
